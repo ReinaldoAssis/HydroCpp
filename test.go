@@ -13,16 +13,28 @@ type pvalue struct
     hydrophobic bool
 }
 
-// func random_values()
-// {
-
-// }
-
 func boolToInt(b bool) int {
     if b {
         return 1
     }
     return 0
+}
+
+func generateOddNumber() int {
+    var n int = rand.Intn(20)
+    if n % 2 == 0 {
+        n++
+    }
+    return n
+}
+
+func findCenter (matrix [][]pvalue) (int, int) {
+    var center_x, center_y int = len(matrix)/2, len(matrix[0])/2
+    return center_x, center_y
+}
+
+func placeAtPosition(matrix [][]pvalue, x int, y int, element pvalue) {
+    matrix[x][y] = element
 }
 
 func printMatrix(matrix [][]pvalue) {
@@ -53,12 +65,14 @@ func main() {
     fmt.Println("Hi mom hi dad")
     rand.Seed(time.Now().UnixNano())
    
-    var q int = rand.Intn(20)
-    fmt.Println(q)
+    var q int = generateOddNumber()
+    var s int = generateOddNumber()
+
+    fmt.Printf("%d x %d\n",q,s)
 
     matrix := make([][]pvalue, q)
     for i := range matrix {
-        matrix[i] = make([]pvalue, q)
+        matrix[i] = make([]pvalue, s)
         for j := range matrix[i] {
             matrix[i][j].index = i*q + j
             matrix[i][j].compound = '*'
@@ -67,7 +81,10 @@ func main() {
     }
 
     
-    matrix = random_values(matrix)
+    //matrix = random_values(matrix)
+
+    var center_x, center_y int = findCenter(matrix)
+    placeAtPosition(matrix, center_x, center_y, pvalue{index: 0, compound: 'A', hydrophobic: true})
 
     printMatrix(matrix)
 
