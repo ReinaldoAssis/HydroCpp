@@ -6,86 +6,107 @@ import (
 	"time"
 )
 
-type pvalue struct
-{
-    index int
-    compound byte
-    hydrophobic bool
+type protein struct {
+	compound    byte
+	hydrophobic bool
+	polar       bool
 }
 
-func boolToInt(b bool) int {
-    if b {
-        return 1
+func createMatrix(size int) [][]protein {
+	var matrix = make([][]protein, size)
+	for i := 0; i < size; i++ {
+        matrix[i] = make([]protein, size)
+		for j := 0; j < size; j++ {
+            matrix[i][j].compound = '*'
+        }
+	}
+	return matrix
+}
+
+func rnd() int {
+	return rand.Intn(12)*2+1;
+}
+
+func isEmpty(matrix [][]protein) bool {
+    for i := range matrix{
+        for j := range matrix[i]{
+            if matrix[i][j].compound != '*'{
+                return false
+            }
+        }
     }
-    return 0
+    return true       
 }
 
-func generateOddNumber() int {
-    var n int = rand.Intn(20)
-    if n % 2 == 0 {
-        n++
+func findCenter(matrix [][]protein) (x int, y int) {
+    x = len(matrix)/2
+    y = len(matrix[0])/2
+    return x,y
+}
+
+func appendToClosestElement(matrix [][]protein, p protein) {
+    var x, y int
+    var originalX int
+    if (isEmpty(matrix)){
+        x,y = findCenter(matrix)
+        matrix[x][y] = p
+        return
+    }else{
+        for i := range matrix{
+            for j := range matrix[i]{
+                if matrix[i][j].compound != '*'{
+                    x = i
+                    y = j
+                    originalX = i
+                }
+            }
+        }
     }
-    return n
+    
+    for {
+        x++
+        if x >= len(matrix){
+            x = originalX
+            y++
+        }
+        if y >= len(matrix[0]){
+            break
+        }
+        if matrix[x][y].compound == '*'{
+            matrix[x][y] = p
+            break
+        }
+    }
+
 }
 
-func findCenter (matrix [][]pvalue) (int, int) {
-    var center_x, center_y int = len(matrix)/2, len(matrix[0])/2
-    return center_x, center_y
-}
-
-func placeAtPosition(matrix [][]pvalue, x int, y int, element pvalue) {
+func insert(matrix [][]protein, element protein){
+    var x, y int
+    if (isEmpty(matrix)){
+        x,y = findCenter(matrix)
+    }else{
+        x = rand.Intn(len(matrix))
+        y = rand.Intn(len(matrix[0]))
+    }
     matrix[x][y] = element
 }
 
-func printMatrix(matrix [][]pvalue) {
-    for i := range matrix {
-        for j := range matrix[i] {
-            fmt.Printf("%c ", matrix[i][j].compound)
+func print(matrix [][]protein){
+    for i := range matrix{
+        for j := range matrix[i]{
+            fmt.Printf("%c ",matrix[i][j].compound)
         }
-        fmt.Println()
+        fmt.Println("")
     }
-}
-
-func random_values(matrix [][]pvalue) [][]pvalue {
-    for i := range matrix {
-        for j := range matrix[i] {
-            var chance int = rand.Intn(100)
-
-            if chance >= 50 {
-                matrix[i][j].compound = byte(rand.Intn(26) + 65)
-            }
-            matrix[i][j].hydrophobic = bool(rand.Intn(2) == 1)
-        }
-    }
-    return matrix
 }
 
 func main() {
-    
-    fmt.Println("Hi mom hi dad")
     rand.Seed(time.Now().UnixNano())
-   
-    var q int = generateOddNumber()
-    var s int = generateOddNumber()
-
-    fmt.Printf("%d x %d\n",q,s)
-
-    matrix := make([][]pvalue, q)
-    for i := range matrix {
-        matrix[i] = make([]pvalue, s)
-        for j := range matrix[i] {
-            matrix[i][j].index = i*q + j
-            matrix[i][j].compound = '*'
-            matrix[i][j].hydrophobic = true
-        }
-    }
-
-    
-    //matrix = random_values(matrix)
-
-    var center_x, center_y int = findCenter(matrix)
-    placeAtPosition(matrix, center_x, center_y, pvalue{index: 0, compound: 'A', hydrophobic: true})
-
-    printMatrix(matrix)
-
+	var matrix = createMatrix(rnd())
+    fmt.Println("Matrix is empty ",isEmpty(matrix))
+    insert(matrix, protein{'A',true,false})
+    appendToClosestElement(matrix, protein{'B',true,false})
+    appendToClosestElement(matrix, protein{'C',true,false})
+    appendToClosestElement(matrix, protein{'D',true,false})
+    print(matrix)
 }
