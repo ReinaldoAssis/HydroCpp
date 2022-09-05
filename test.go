@@ -6,107 +6,111 @@ import (
 	"time"
 )
 
-type protein struct {
-	compound    byte
-	hydrophobic bool
-	polar       bool
+type vector2 struct{
+    x int
+    y int
 }
 
-func createMatrix(size int) [][]protein {
-	var matrix = make([][]protein, size)
-	for i := 0; i < size; i++ {
-        matrix[i] = make([]protein, size)
-		for j := 0; j < size; j++ {
-            matrix[i][j].compound = '*'
-        }
-	}
-	return matrix
+type aminoacid struct {
+    compound byte
+    polarity bool
+    position vector2
 }
 
-func rnd() int {
-	return rand.Intn(12)*2+1;
+type protein struct{
+    matrix [][]aminoacid
+    constraint vector2
+    size vector2
 }
 
-func isEmpty(matrix [][]protein) bool {
-    for i := range matrix{
-        for j := range matrix[i]{
-            if matrix[i][j].compound != '*'{
-                return false
-            }
-        }
-    }
-    return true       
-}
+func (p *protein) instanciateMatrix(size int) {
+    p.matrix = make([][]aminoacid, size)
+    p.size = vector2{size,size}
+    p.constraint = vector2{-1,-1}
 
-func findCenter(matrix [][]protein) (x int, y int) {
-    x = len(matrix)/2
-    y = len(matrix[0])/2
-    return x,y
-}
-
-func appendToClosestElement(matrix [][]protein, p protein) {
-    var x, y int
-    var originalX int
-    if (isEmpty(matrix)){
-        x,y = findCenter(matrix)
-        matrix[x][y] = p
-        return
-    }else{
-        for i := range matrix{
-            for j := range matrix[i]{
-                if matrix[i][j].compound != '*'{
-                    x = i
-                    y = j
-                    originalX = i
-                }
-            }
+    for i := 0; i<size; i++{
+        p.matrix[i] = make([]aminoacid, size)
+        for j := 0; j<size; j++{
+            p.matrix[i][j] = aminoacid{'*',false,vector2{i,j}}
         }
     }
-    
+}
+
+func (p protein) printMatrix() {
+    for i:=0; i<len(p.matrix); i++ {
+        for j:=0; j<len(p.matrix); j++ {
+            fmt.Printf("%c ", p.matrix[i][j].compound)
+        }
+        fmt.Println()
+    }
+}
+
+func (p *protein) append(start vector2, sequence []aminoacid){
+    pos := start
+    for i := range sequence {
+        if pos.y >= p.size.y {
+            fmt.Println("[error] matrix overflow.")
+            return
+        }
+        p.matrix[pos.y][pos.x] = sequence[i]
+        pos.x++
+        if p.constraint.x != -1{
+            if pos.x +1 > len(p.matrix[0])-(p.constraint.x){
+                pos.x = start.x
+                pos.y++
+            }
+        } else if pos.x +1 > len(p.matrix[0]){
+                pos.x = start.x
+                pos.y++
+        }
+
+        
+    }
+}
+
+
+func (p protein) center() vector2{
+    return vector2{len(p.matrix)/2, len(p.matrix)/2}
+}
+
+//======================
+
+func readAminoacidSequence() []aminoacid {
+    var sequence []aminoacid = make([]aminoacid, 0)
+    var aminoacid aminoacid
     for {
-        x++
-        if x >= len(matrix){
-            x = originalX
-            y++
-        }
-        if y >= len(matrix[0]){
+        fmt.Scanf("%c", &aminoacid.compound)
+        if aminoacid.compound == '!'{
             break
         }
-        if matrix[x][y].compound == '*'{
-            matrix[x][y] = p
-            break
+        sequence = append(sequence, aminoacid)
+    }
+    return sequence
+}
+
+func randomSequence() []aminoacid{
+    var size int = rand.Intn(20)*2+5
+    var sequence []aminoacid = make([]aminoacid,size)
+    for i:=0; i<size; i++{
+        var compound byte
+        if rand.Intn(100) < 50 {
+            compound = 'P'
+        } else {
+            compound = 'H'
         }
+        sequence[i] = aminoacid{compound,compound == 'H',vector2{-1,-1}}
     }
-
+    return sequence
 }
 
-func insert(matrix [][]protein, element protein){
-    var x, y int
-    if (isEmpty(matrix)){
-        x,y = findCenter(matrix)
-    }else{
-        x = rand.Intn(len(matrix))
-        y = rand.Intn(len(matrix[0]))
-    }
-    matrix[x][y] = element
-}
+func main(){
 
-func print(matrix [][]protein){
-    for i := range matrix{
-        for j := range matrix[i]{
-            fmt.Printf("%c ",matrix[i][j].compound)
-        }
-        fmt.Println("")
-    }
-}
-
-func main() {
     rand.Seed(time.Now().UnixNano())
-	var matrix = createMatrix(rnd())
-    fmt.Println("Matrix is empty ",isEmpty(matrix))
-    insert(matrix, protein{'A',true,false})
-    appendToClosestElement(matrix, protein{'B',true,false})
-    appendToClosestElement(matrix, protein{'C',true,false})
-    appendToClosestElement(matrix, protein{'D',true,false})
-    print(matrix)
+
+    var space protein
+    space.instanciateMatrix(10)
+    space.constraint = vector2{3,0}
+    space.append(vector2{3,0},randomSequence())
+    space.printMatrix()
+
 }
