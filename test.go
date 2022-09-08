@@ -11,6 +11,8 @@ type vector2 struct{
     y int
 }
 
+type VectorSlice []vector2
+
 type aminoacid struct {
     compound byte
     polarity bool
@@ -45,25 +47,128 @@ func (p protein) printMatrix() {
     }
 }
 
+func negativeRnd() int {
+    if rand.Intn(2) == 0{
+         return -1
+    } else{
+        return 1
+    }
+}
+
+func negativeDelta() vector2{
+    if rand.Intn(2) == 0{
+        return vector2{negativeRnd(),0}
+    } else{
+        return vector2{0,negativeRnd()}
+    }
+}
+
+func (s VectorSlice) contains(vec vector2) bool{
+    for _, a := range s{
+        if a == vec{
+            return true
+        }
+    }
+    return false
+}
+
+func (vec vector2) restrains(vetores VectorSlice) bool{
+    for i := range vetores{
+        if vec.x < vetores[i].x || vec.y < vetores[i].y{
+            return false
+        }
+    }
+    return true
+}
+
 func (p *protein) append(start vector2, sequence []aminoacid){
     pos := start
     for i := range sequence {
+
+        var delta vector2 = negativeDelta()
+
         if pos.y >= p.size.y {
             fmt.Println("[error] matrix overflow.")
             return
         }
-        p.matrix[pos.y][pos.x] = sequence[i]
-        pos.x++
-        if p.constraint.x != -1{
-            if pos.x +1 > len(p.matrix[0])-(p.constraint.x){
-                pos.x = start.x
-                pos.y++
-            }
-        } else if pos.x +1 > len(p.matrix[0]){
-                pos.x = start.x
-                pos.y++
+
+        if pos.x+delta.x == -1{
+            delta.x = 0
         }
 
+        if pos.y+delta.y == -1{
+            delta.y = 0
+        }
+
+        //p.matrix[pos.y][pos.x] = sequence[i]
+        //pos.x++
+        // if p.constraint.x != -1{
+        //     if pos.x +1 > len(p.matrix[0])-(p.constraint.x){
+        //         pos.x = start.x
+        //         pos.y++
+        //     }
+        // } else if pos.x +1 > len(p.matrix[0]){
+        //         pos.x = start.x
+        //         pos.y++
+        // }
+
+        if p.constraint.x != -1 && p.constraint.y != -1{
+
+            var limit vector2 = vector2{len(p.matrix[0])-(p.constraint.x),len(p.matrix)-(p.constraint.y)}
+
+           // if pos.x + delta.x < limit.x && pos.y + delta.y < limit.y{
+                var combinacoes VectorSlice = make([]vector2,4)
+                for j:=0; j<4; j++{
+                    combinacoes = append(combinacoes, delta)
+
+                if limit.restrains(VectorSlice{{pos.x+delta.x,pos.y},{pos.x,pos.y+delta.y}}){
+                    if p.matrix[pos.y+delta.y][pos.x+delta.x].compound == '*'{
+                        p.matrix[pos.y+delta.y][pos.x+delta.x] = sequence[i]
+                        pos.x++
+                        break
+                    }else{
+                        //se o espaço não estiver disponível, tentar outro
+                        delta = negativeDelta()
+                        for{
+                            if pos.x+delta.x == -1{
+                                delta.x = 0
+                            }
+                    
+                            if pos.y+delta.y == -1{
+                                delta.y = 0
+                            }
+                            if len(combinacoes) == 4{
+                                break
+                            }
+                            if (!combinacoes.contains(delta)){
+                                break
+                            }
+                            delta = negativeDelta()
+                        }
+                    }
+                } else{
+                    delta = negativeDelta()
+                        for{
+                            if pos.x+delta.x == -1{
+                                delta.x = 0
+                            }
+                    
+                            if pos.y+delta.y == -1{
+                                delta.y = 0
+                            }
+                            if len(combinacoes) == 4{
+                                break
+                            }
+                            if (!combinacoes.contains(delta)){
+                                break
+                            }
+                            delta = negativeDelta()
+                        }
+                }
+            }
+           // } 
+
+        }
         
     }
 }
@@ -109,8 +214,9 @@ func main(){
 
     var space protein
     space.instanciateMatrix(10)
-    space.constraint = vector2{3,0}
-    space.append(vector2{3,0},randomSequence())
+    //matrix padding
+    space.constraint = vector2{0,0}
+    space.append(vector2{3,4},randomSequence())
     space.printMatrix()
 
 }
