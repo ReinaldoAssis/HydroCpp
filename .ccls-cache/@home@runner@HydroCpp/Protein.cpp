@@ -24,6 +24,7 @@ void protein::initialize(int _length, bool randomStart,
   }
 
   randomizeSequences = _randomizeSequences;
+  sequence_string = "";
 }
 
 void protein::print(PRINT_MODE mode) {
@@ -73,9 +74,12 @@ bool protein::place(vector2 location, aminoacid element) {
   try {
     if (matrix[location.y][location.x].compound != this->emptyChar)
       return false;
-    else
-      matrix[location.y][location.x] = element;
+
+    matrix[location.y][location.x] = element;
+    sequence.push_back(location);
+    sequence_string += element.compound;
     return true;
+
   } catch (exception e) {
     printf("[ERROR] Failed to place aminoacid at %d, %d\n", location.x,
            location.y);
@@ -154,8 +158,58 @@ void protein::append(vector<aminoacid> sequence) {
       }
     }
   }
+}
 
-  // if(placed != sequence.size()){
-  //     printf("[ERROR] Failed to place all aminoacids\n");
+int protein::score_function() {
+  int score = 0;
+
+  // THIS IS INSANELY INEFFICIENT! I'm just doing it as a temporary solution!
+  // for (int i = 0; i < this->length; i++) {
+  //   for (int j = 0; j < this->length; j++) {
+  //     if (this->matrix[i][j].compound == 'H') {
+  //       if (i - 1 >= 0)
+  //         if (this->matrix[i - 1][j].compound == 'H')
+  //           score++;
+
+  //       if (i + 1 < this->length)
+  //         if (this->matrix[i + 1][j].compound == 'H')
+  //           score++;
+
+  //       if (j - 1 >= 0)
+  //         if (this->matrix[i][j - 1].compound == 'H')
+  //           score++;
+
+  //       if (j + 1 < this->length)
+  //         if (this->matrix[i][j + 1].compound == 'H')
+  //           score++;
+  //     }
+  //   }
   // }
+
+  for(int n=0; n<sequence.size(); n++)
+  {
+    int i,j;
+    i = sequence[n].y;
+    j = sequence[n].x;
+    
+    if (this->matrix[i][j].compound == 'H') {
+      if (i - 1 >= 0)
+        if (this->matrix[i - 1][j].compound == 'H')
+          score++;
+    
+      if (i + 1 < this->length)
+        if (this->matrix[i + 1][j].compound == 'H')
+          score++;
+    
+      if (j - 1 >= 0)
+        if (this->matrix[i][j - 1].compound == 'H')
+          score++;
+    
+      if (j + 1 < this->length)
+        if (this->matrix[i][j + 1].compound == 'H')
+          score++;
+    }
+  }
+
+  return score;
 }

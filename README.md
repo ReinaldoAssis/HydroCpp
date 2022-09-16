@@ -1,3 +1,3 @@
-## HydroGo
+## HydroCpp
 
-HydroGo is a hydrophobic protein structure display written in go and ReactJS as part of my Data Structures course.
+HydroCpp is a hydrophobic protein structure display written in pure C++ as part of my Data Structures course.

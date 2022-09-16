@@ -8,6 +8,9 @@
 struct protein {
 
     std::vector<std::vector<aminoacid>> matrix;
+    std::string sequence_string;
+    std::vector<vector2> sequence;
+
     int length;
     vector2 position = vector2(0, 0);
     bool randomizeSequences = false;
@@ -53,6 +56,9 @@ struct protein {
     //vector2 _brute_force_positions();
 
     vector2 random_valid_delta();
+
+    //@returns the active energy in the protein 
+    int score_function();
 
 
 };

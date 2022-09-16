@@ -11,9 +11,9 @@ template <class x> std::string str(x a) { return std::to_string(a); }
 
 void run_single_test(bool debug, bool result, bool &success,
                      std::string label) {
-  std::string spacer = "....................";
+  std::string spacer = ".........................";
   if (debug && result)
-    std::cout << label + spacer.substr(0, 20 - label.size()) + " [OK]\n";
+    std::cout << label + spacer.substr(0, 25 - label.size()) + " [OK]\n";
   else if (debug && !result)
     std::cout << label + " [ERROR]\n";
   success &= result;
@@ -174,6 +174,36 @@ bool test_protein_valid_delta() {
   return r1 && r2 && r3;
 }
 
+bool test_protein_score() {
+  protein p = protein(10);
+  aminoacid x = aminoacid('H', -1);
+  p.place(0, 0, x);
+  p.place(1, 0, x);
+  p.place(2, 0, x);
+
+  // p.print();
+
+  bool r1 = p.score_function() == 4;
+
+  p = protein(10);
+  p.place(0, 0, x);
+  p.place(1, 1, x);
+  p.place(2, 1, x);
+  p.place(3, 1, x);
+  p.place(3, 2, x);
+  // p.print();
+
+  // info("Score: "+str(p.score_function()));
+  bool r2 = p.score_function() == 6;
+
+  p = protein(10);
+  p.place(0, 0, x);
+
+  bool r3 = p.score_function() == 0;
+
+  return r1 && r2 && r3;
+}
+
 bool run_all_tests(bool debug) {
   bool result = true;
   bool test = false;
@@ -204,6 +234,9 @@ bool run_all_tests(bool debug) {
 
   test = test_protein_valid_delta();
   run_single_test(debug, test, result, "protein_valid_delta");
+
+  test = test_protein_score();
+  run_single_test(debug, test, result, "protein_score_function");
 
   return result;
 }
