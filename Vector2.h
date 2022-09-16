@@ -1,7 +1,7 @@
 #ifndef VECTOR2_H
 #define VECTOR2_H
 
-#define VECTOR2_INVALID vector2(-1, -1)
+#define VECTOR2_INVALID vector2(-2147483647, -2147483647)
 
 #include <string>
 #include <vector>
@@ -46,4 +46,4 @@ struct vector2 {
   }
 };
 
-#endif #pragma once
+#endif

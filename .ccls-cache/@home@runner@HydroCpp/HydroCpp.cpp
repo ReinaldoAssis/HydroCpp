@@ -16,7 +16,7 @@ int main() {
   srand(time(NULL));
   
   _display_random_proteins();
-  evolution();
+  //evolution();
 
   printf("\nTest result %s\n", run_all_tests() ? "[ALL PASSING]" : "[FAIL]");
 

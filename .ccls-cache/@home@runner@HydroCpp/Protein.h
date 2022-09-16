@@ -60,6 +60,9 @@ struct protein {
     //@returns the active energy in the protein 
     int score_function();
 
+    //@returns an array of elements displacements in relation to the initial element
+    std::vector<vector2> get_relative_coords();
+
 
 };
 

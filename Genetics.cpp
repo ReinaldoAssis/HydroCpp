@@ -27,16 +27,23 @@ void _display_random_proteins() {
     p.position = vector2(rand() % 5, rand() % 5);
 
     std::vector<aminoacid> sequence = randomSequence(size);
-    // for (int i = 0; i < size; i++)
-    //   printf("%c ", sequence[i].compound);
-    // printf("\n\n");
 
     p.append(sequence);
 
+    std::string directions("");
+    std::string relative("");
+    std::vector<vector2> r = p.get_relative_coords();
+    for(int i=0; i<sequence.size(); i++){
+      directions += "("+p.sequence[i].toStr()+")"+" ";
+      relative += "("+r[i].toStr()+")"+" ";
+    }
+        
     // p.print(p.PRINT_MODE_INDEXED);
     p.print();
     printf("Score %d\n\n", p.score_function());
     std::cout << "Sequence " + p.sequence_string+"\n";
+    std::cout << "Vectors "+directions+"\n";
+    std::cout << "Vectors relative "+relative+"\n";
     std::cout << "-------------\n";
   }
 }
@@ -111,10 +118,24 @@ std::vector<protein> breed_and_mutate(std::vector<protein> initial_prole)
     placement subprotein = rand() % 2 == 0 ? BEGINNING : END;
     vector2 displacement = vector2(0,0);
 
-    int max_x = prole[i].length - 1 - 
+    //selectes a random individual from population
+    int indexA = rand() % (sizeof(selected)/sizeof(selected[0]));
+    int indexB = rand() % (sizeof(selected)/sizeof(selected[0]));
+    protein parentA = selected[indexA];
+    protein parentB = selected[indexB];
+
+    //determines how much we can displace a protein
+    // int max_x = parentA.length - 1 - parentA._position.x;
+    // int min_x = parentA._position.x;
+
+    // int max_y = parentA.length - 1 - parentA._position.y;
+    // int min_y = parentA._position.y;
+    //-----
+    
+    protein child = protein(parentA.length);
     
     
-    protein new_protein = protein()
+    
     
   }
   
