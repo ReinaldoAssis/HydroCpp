@@ -113,23 +113,23 @@ vector2 protein::random_valid_delta() {
   return VECTOR2_INVALID;
 }
 
-void protein::append(vector<aminoacid> sequence) {
+void protein::append(vector<aminoacid> amino_sequence) {
   if (randomizeSequences) {
     // iterate over sequence and branch aminoacids randomly
-    for (int i = 0; i < sequence.size(); i++) {
+    for (int i = 0; i < amino_sequence.size(); i++) {
       // sets aminoacid index
-      sequence[i].index = i;
+      amino_sequence[i].index = i;
 
       if (i == 0) {
-        place(position, sequence[i]);
-        if (checkMove(vector2(0, 1)))
-          matrix[position.y + 1][position.x] = aminoacid('*', -1);
-        else if (checkMove(vector2(0, -1)))
-          matrix[position.y - 1][position.x] = aminoacid('*', -1);
-        else if (checkMove(vector2(1, 0)))
-          matrix[position.y][position.x + 1] = aminoacid('*', -1);
-        else if (checkMove(vector2(-1, 0)))
-          matrix[position.y][position.x - 1] = aminoacid('*', -1);
+        place(position, amino_sequence[i]);
+        // if (checkMove(vector2(0, 1)))
+        //   matrix[position.y + 1][position.x] = aminoacid('*', -1);
+        // else if (checkMove(vector2(0, -1)))
+        //   matrix[position.y - 1][position.x] = aminoacid('*', -1);
+        // else if (checkMove(vector2(1, 0)))
+        //   matrix[position.y][position.x + 1] = aminoacid('*', -1);
+        // else if (checkMove(vector2(-1, 0)))
+        //   matrix[position.y][position.x - 1] = aminoacid('*', -1);
 
         continue;
       }
@@ -137,27 +137,25 @@ void protein::append(vector<aminoacid> sequence) {
       // Determines if the inicial delta will be in the x or y axis
       vector2 delta = random_valid_delta();
       if (delta == VECTOR2_INVALID) {
-        printf("[ERROR] Brute force failed %c at %d\n", sequence[i].compound,
-               i);
+        // printf("[ERROR] Brute force failed %c at %d\n",
+               // amino_sequence[i].compound, i);
 
-        this->sequence.push_back(VECTOR2_INVALID);
-        sequence_string += sequence[i].compound;
+        sequence.push_back(VECTOR2_INVALID);
+        sequence_string += amino_sequence[i].compound;
 
       } else {
-        // if(abs(delta.x) && abs(delta.y)) std::cout << "[ERROR] INVALID
-        // DELTA!!!!\n"; std::cout << "delta generated " + delta.toStr() + "\n";
-        place(position + delta, sequence[i]);
+        place(position + delta, amino_sequence[i]);
         position += delta;
       }
     }
   } else {
-    for (int i = 0; i < sequence.size(); i++) {
+    for (int i = 0; i < amino_sequence.size(); i++) {
       if (position.x == length) {
         position.x = 0;
         position.y++;
       }
       if (matrix[position.y][position.x].compound == this->emptyChar) {
-        place(position, sequence[i]);
+        place(position, amino_sequence[i]);
 
         position.x++;
       }
@@ -192,26 +190,29 @@ int protein::score_function() {
   // }
 
   for (int n = 0; n < sequence.size(); n++) {
-    int i, j;
-    i = sequence[n].y;
-    j = sequence[n].x;
 
-    if (this->matrix[i][j].compound == 'H') {
-      if (i - 1 >= 0)
-        if (this->matrix[i - 1][j].compound == 'H')
-          score++;
+    if (sequence[n] != VECTOR2_INVALID) {
+      int i, j;
+      i = sequence[n].y;
+      j = sequence[n].x;
 
-      if (i + 1 < this->length)
-        if (this->matrix[i + 1][j].compound == 'H')
-          score++;
+      if (this->matrix[i][j].compound == 'H') {
+        if (i - 1 >= 0)
+          if (this->matrix[i - 1][j].compound == 'H')
+            score++;
 
-      if (j - 1 >= 0)
-        if (this->matrix[i][j - 1].compound == 'H')
-          score++;
+        if (i + 1 < this->length)
+          if (this->matrix[i + 1][j].compound == 'H')
+            score++;
 
-      if (j + 1 < this->length)
-        if (this->matrix[i][j + 1].compound == 'H')
-          score++;
+        if (j - 1 >= 0)
+          if (this->matrix[i][j - 1].compound == 'H')
+            score++;
+
+        if (j + 1 < this->length)
+          if (this->matrix[i][j + 1].compound == 'H')
+            score++;
+      }
     }
   }
 
@@ -225,13 +226,20 @@ std::vector<vector2> protein::get_relative_coords() {
   relative.push_back(vector2(0, 0));
 
   for (int i = 1; i < length; i++) {
-    if(sequence[i] != VECTOR2_INVALID)
-    {
+    if (sequence[i] != VECTOR2_INVALID) {
       relative.push_back((sequence[i] - previous));
       previous = sequence[i];
-    }
-    else relative.push_back(VECTOR2_INVALID);
+    } else
+      relative.push_back(VECTOR2_INVALID);
   }
 
   return relative;
+}
+
+int protein::get_invalid_vectors() {
+  int c = 0;
+  for (int i = 0; i < sequence.size(); i++)
+    if (sequence[i] == VECTOR2_INVALID)
+      c++;
+  return c;
 }

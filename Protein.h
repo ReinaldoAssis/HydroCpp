@@ -24,6 +24,7 @@ struct protein {
     {
         length = _length;
         position = initialPosition;
+        _position = initialPosition;
         randomizeSequences = _randomizeSequences;
         emptyChar = _emptyChar;
         this->initialize(length, randomStart, randomizeSequences);
@@ -62,6 +63,9 @@ struct protein {
 
     //@returns an array of elements displacements in relation to the initial element
     std::vector<vector2> get_relative_coords();
+
+    //@returns the amount of invalid vectors
+    int get_invalid_vectors();
 
 
 };
