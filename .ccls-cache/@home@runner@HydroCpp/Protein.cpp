@@ -28,8 +28,9 @@ void protein::initialize(int _length, bool randomStart,
 }
 
 void protein::print(PRINT_MODE mode) {
-  if(this->length >= 70){
-    std::cout << "[ERROR] Protein is too big to be printed in the terminal." << std::endl;
+  if (this->length >= 70) {
+    std::cout << "[ERROR] Protein is too big to be printed in the terminal."
+              << std::endl;
     return;
   }
   for (int i = 0; i < length; i++) {
@@ -142,7 +143,7 @@ void protein::append(vector<aminoacid> amino_sequence) {
       vector2 delta = random_valid_delta();
       if (delta == VECTOR2_INVALID) {
         // printf("[ERROR] Brute force failed %c at %d\n",
-               // amino_sequence[i].compound, i);
+        // amino_sequence[i].compound, i);
 
         sequence.push_back(VECTOR2_INVALID);
         sequence_string += amino_sequence[i].compound;
@@ -226,39 +227,48 @@ void protein::append(vector<aminoacid> amino_sequence) {
 
 double protein::score_function() {
 
-  double score=0;
+  double score = 0;
 
-  struct H
-  {
-    vector2 pos = vector2(0,0);
-    int i=-1;
+  struct H {
+    vector2 pos = vector2(0, 0);
+    int i = -1;
 
-    H(vector2 _pos, int _i){
+    H(vector2 _pos, int _i) {
       pos = _pos;
       i = _i;
     }
   };
-  
+
   std::vector<H> hs;
-  
-  for(int n=0; n<sequence.size(); n++)
-  {
+
+  for (int n = 0; n < sequence.size(); n++) {
     if (sequence[n] != VECTOR2_INVALID) {
       int i, j;
       i = sequence[n].y;
       j = sequence[n].x;
 
-      if(matrix[i][j].compound == 'H')
-        hs.push_back(H(vector2(j,i),n));
+      if (matrix[i][j].compound == 'H')
+        hs.push_back(H(vector2(j, i), n));
     }
   }
 
-  for(int n=0; n<hs.size(); n++)
-  {
-    int local_score=0;
-    
+  for (int n = 0; n < hs.size(); n++) {
+    double local_score = 0;
+    for (int m = 0; m < hs.size(); m++) {
+      // if its the same aminoacid, break one iteration
+      if (hs[m].i == hs[n].i)
+        continue;
+
+      int dist =
+          abs(hs[m].pos.x - hs[n].pos.x) + abs(hs[m].pos.y - hs[n].pos.y);
+      local_score += (1 / (double)dist);
+      //printf("1/%d = %.2f\n",dist,1/(double)dist);
+    }
+
+    score += local_score;
   }
-  
+
+  return score;
 }
 
 std::vector<vector2> protein::get_relative_coords() {
