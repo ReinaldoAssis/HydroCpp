@@ -77,7 +77,7 @@ void _display_random_proteins(int size, bool debug) {
     // p.print(p.PRINT_MODE_INDEXED);
     p.print();
     std::cout << std::endl;
-    printf("Score %d\n", p.score_function());
+    printf("Score %.2f\n", p.score_function());
     std::cout << "Initial position " + p._position.toStr() + "\n\n";
     std::cout << "Sequence " + p.sequence_string + "\n";
     if (debug) {
@@ -249,10 +249,10 @@ std::vector<protein> breed_and_mutate(std::vector<protein> initial_prole) {
 }
 
 protein best_score(std::vector<protein> population) {
-  int max = 0;
+  double max = 0;
   protein best;
   for (int i = 0; i < population.size(); i++) {
-    int score = population[i].score_function();
+    double score = population[i].score_function();
     if (max < score) {
       max = score;
       best = population[i];
@@ -274,13 +274,13 @@ void evolution() {
       random_population(100, _size, amino_sequence);
 
   protein k = best_score(initial_prole);
-  printf("Initial prole score %d\n", k.score_function());
+  printf("Initial prole score %.2f\n", k.score_function());
   k.print();
 
   for (int i = 0; i < 800; i++)
     initial_prole = breed_and_mutate(initial_prole);
 
   k = best_score(initial_prole);
-  printf("Evolved prole score %d\n", k.score_function());
+  printf("Evolved prole score %.2f\n", k.score_function());
   k.print();
 }

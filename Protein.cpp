@@ -28,6 +28,10 @@ void protein::initialize(int _length, bool randomStart,
 }
 
 void protein::print(PRINT_MODE mode) {
+  if(this->length >= 70){
+    std::cout << "[ERROR] Protein is too big to be printed in the terminal." << std::endl;
+    return;
+  }
   for (int i = 0; i < length; i++) {
     for (int j = 0; j < length; j++) {
 
@@ -163,60 +167,98 @@ void protein::append(vector<aminoacid> amino_sequence) {
   }
 }
 
-int protein::score_function() {
-  int score = 0;
+// OLD SCORE FUNCTION
+// int protein::score_function() {
+//   int score = 0;
 
-  // THIS IS INSANELY INEFFICIENT! I'm just doing it as a temporary solution!
-  // for (int i = 0; i < this->length; i++) {
-  //   for (int j = 0; j < this->length; j++) {
-  //     if (this->matrix[i][j].compound == 'H') {
-  //       if (i - 1 >= 0)
-  //         if (this->matrix[i - 1][j].compound == 'H')
-  //           score++;
+//   // THIS IS INSANELY INEFFICIENT! I'm just doing it as a temporary solution!
+//   // for (int i = 0; i < this->length; i++) {
+//   //   for (int j = 0; j < this->length; j++) {
+//   //     if (this->matrix[i][j].compound == 'H') {
+//   //       if (i - 1 >= 0)
+//   //         if (this->matrix[i - 1][j].compound == 'H')
+//   //           score++;
 
-  //       if (i + 1 < this->length)
-  //         if (this->matrix[i + 1][j].compound == 'H')
-  //           score++;
+//   //       if (i + 1 < this->length)
+//   //         if (this->matrix[i + 1][j].compound == 'H')
+//   //           score++;
 
-  //       if (j - 1 >= 0)
-  //         if (this->matrix[i][j - 1].compound == 'H')
-  //           score++;
+//   //       if (j - 1 >= 0)
+//   //         if (this->matrix[i][j - 1].compound == 'H')
+//   //           score++;
 
-  //       if (j + 1 < this->length)
-  //         if (this->matrix[i][j + 1].compound == 'H')
-  //           score++;
-  //     }
-  //   }
-  // }
+//   //       if (j + 1 < this->length)
+//   //         if (this->matrix[i][j + 1].compound == 'H')
+//   //           score++;
+//   //     }
+//   //   }
+//   // }
 
-  for (int n = 0; n < sequence.size(); n++) {
+//   for (int n = 0; n < sequence.size(); n++) {
 
+//     if (sequence[n] != VECTOR2_INVALID) {
+//       int i, j;
+//       i = sequence[n].y;
+//       j = sequence[n].x;
+
+//       if (this->matrix[i][j].compound == 'H') {
+//         if (i - 1 >= 0)
+//           if (this->matrix[i - 1][j].compound == 'H')
+//             score++;
+
+//         if (i + 1 < this->length)
+//           if (this->matrix[i + 1][j].compound == 'H')
+//             score++;
+
+//         if (j - 1 >= 0)
+//           if (this->matrix[i][j - 1].compound == 'H')
+//             score++;
+
+//         if (j + 1 < this->length)
+//           if (this->matrix[i][j + 1].compound == 'H')
+//             score++;
+//       }
+//     }
+//   }
+
+//   return score;
+// }
+
+double protein::score_function() {
+
+  double score=0;
+
+  struct H
+  {
+    vector2 pos = vector2(0,0);
+    int i=-1;
+
+    H(vector2 _pos, int _i){
+      pos = _pos;
+      i = _i;
+    }
+  };
+  
+  std::vector<H> hs;
+  
+  for(int n=0; n<sequence.size(); n++)
+  {
     if (sequence[n] != VECTOR2_INVALID) {
       int i, j;
       i = sequence[n].y;
       j = sequence[n].x;
 
-      if (this->matrix[i][j].compound == 'H') {
-        if (i - 1 >= 0)
-          if (this->matrix[i - 1][j].compound == 'H')
-            score++;
-
-        if (i + 1 < this->length)
-          if (this->matrix[i + 1][j].compound == 'H')
-            score++;
-
-        if (j - 1 >= 0)
-          if (this->matrix[i][j - 1].compound == 'H')
-            score++;
-
-        if (j + 1 < this->length)
-          if (this->matrix[i][j + 1].compound == 'H')
-            score++;
-      }
+      if(matrix[i][j].compound == 'H')
+        hs.push_back(H(vector2(j,i),n));
     }
   }
 
-  return score;
+  for(int n=0; n<hs.size(); n++)
+  {
+    int local_score=0;
+    
+  }
+  
 }
 
 std::vector<vector2> protein::get_relative_coords() {

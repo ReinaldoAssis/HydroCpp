@@ -48,6 +48,7 @@ int main() {
     }
     else
     {
+      std::cout << std::endl;
       for(int c=0; c<100; c++)
       {
         std::string line("");
@@ -61,7 +62,7 @@ int main() {
         if(p.length <= 100)
           p.print();
         std::cout << std::endl;
-        printf("Score %d\n",p.score_function());
+        printf("Score %.2f\n",p.score_function());
         
         std::getline(std::cin,line);
         if(line.size() != 0) break;
