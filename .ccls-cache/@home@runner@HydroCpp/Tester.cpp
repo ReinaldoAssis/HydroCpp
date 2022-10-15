@@ -183,7 +183,8 @@ bool test_protein_score() {
 
   // p.print();
 
-  bool r1 = p.score_function() == 4;
+  //info(str(p.score_function()));
+  bool r1 = (int)p.score_function() == 5;
 
   p = protein(10);
   p.place(0, 0, x);
@@ -193,8 +194,8 @@ bool test_protein_score() {
   p.place(3, 2, x);
   // p.print();
 
-  // info("Score: "+str(p.score_function()));
-  bool r2 = p.score_function() == 6;
+  //info("Score: "+str(p.score_function()));
+  bool r2 = int(p.score_function()) == 11;
 
   p = protein(10);
   p.place(0, 0, x);

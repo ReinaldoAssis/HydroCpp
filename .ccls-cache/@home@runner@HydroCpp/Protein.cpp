@@ -2,6 +2,7 @@
 #include "Vector2.h"
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -126,7 +127,14 @@ void protein::append(vector<aminoacid> amino_sequence) {
       amino_sequence[i].index = i;
 
       if (i == 0) {
-        place(position, amino_sequence[i]);
+        bool r = place(position, amino_sequence[i]);
+        while (r == false) {
+          position.x = rand() % length;
+          position.y = rand() % length;
+          _position = position;
+          r = place(position, amino_sequence[i]);
+        }
+        // printf("bool %d\n",r);
         // if (checkMove(vector2(0, 1)))
         //   matrix[position.y + 1][position.x] = aminoacid('*', -1);
         // else if (checkMove(vector2(0, -1)))
@@ -154,15 +162,23 @@ void protein::append(vector<aminoacid> amino_sequence) {
       }
     }
   } else {
+    //REGULAR CASE (it's what the professor wants)
+    int r = floor(sqrt(length));
+    int count=0;
+    printf("root %d\n",r);
+    int dir = 1;
+    
     for (int i = 0; i < amino_sequence.size(); i++) {
-      if (position.x == length) {
-        position.x = 0;
-        position.y++;
-      }
       if (matrix[position.y][position.x].compound == this->emptyChar) {
         place(position, amino_sequence[i]);
-
+        count++;
+        position.y+=dir;
+      }
+      if (count == r) { //abs(position.y-_position.y) 
+        //position.y = _position.y;
         position.x++;
+        dir *= -1;
+        count = 0;
       }
     }
   }
@@ -241,6 +257,7 @@ double protein::score_function() {
 
   std::vector<H> hs;
 
+  // first, we indentify and store all Hs in a vector
   for (int n = 0; n < sequence.size(); n++) {
     if (sequence[n] != VECTOR2_INVALID) {
       int i, j;
@@ -252,20 +269,28 @@ double protein::score_function() {
     }
   }
 
+  // for each H we search in its row and in its column to add to the score
+
   for (int n = 0; n < hs.size(); n++) {
-    double local_score = 0;
+    vector2 _pos = hs[n].pos;
+
     for (int m = 0; m < hs.size(); m++) {
       // if its the same aminoacid, break one iteration
       if (hs[m].i == hs[n].i)
         continue;
 
-      int dist =
-          abs(hs[m].pos.x - hs[n].pos.x) + abs(hs[m].pos.y - hs[n].pos.y);
-      local_score += (1 / (double)dist);
-      //printf("1/%d = %.2f\n",dist,1/(double)dist);
-    }
+      int dist = 0;
+      if (hs[m].pos.x == _pos.x)
+        dist = abs(hs[m].pos.y - _pos.y);
+      else if (hs[m].pos.y == _pos.y)
+        dist = abs(hs[m].pos.x - _pos.x);
 
-    score += local_score;
+      // printf("x %d - %d\n",hs[m].pos.x, _pos.x);
+      // printf("y %d - %d\n",hs[m].pos.y, _pos.y);
+      // printf("dist %d\n",dist);
+      if (dist != 0)
+        score += 1 / (double)dist;
+    }
   }
 
   return score;

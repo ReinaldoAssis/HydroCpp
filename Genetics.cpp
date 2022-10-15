@@ -52,7 +52,8 @@ void _display_random_proteins(int size, bool debug) {
   CONSTRUCT:
     protein p;
     p.emptyChar = emptyChar;
-    p.initialize(size, false, true);
+    //p.initialize(size, false, true);
+    p.initialize(size, false, false);
     p.position = vector2(rand() % 5, rand() % 5);
     p._position = p.position;
 
@@ -262,7 +263,7 @@ protein best_score(std::vector<protein> population) {
 }
 
 void evolution() {
-  const int _size = 20;
+  const int _size = 30;
 
   std::vector<aminoacid> amino_sequence = randomSequence(_size);
   std::cout << "Starting evolution with ";
