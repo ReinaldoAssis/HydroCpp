@@ -18,7 +18,8 @@ CONSTRUCT:
   protein p;
   p.emptyChar = emptyChar;
   p.initialize(sequence.size(), false, false);
-  p.position = vector2(rand() % 5, rand() % 5);
+  //p.position = vector2(rand() % 5, rand() % 5);
+  p.position = vector2(sequence.size()/2+1,sequence.size()/2);
   p._position = p.position;
 
   p.append(sequence);

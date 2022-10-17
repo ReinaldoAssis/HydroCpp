@@ -1,8 +1,8 @@
 #include "Protein.h"
 #include "Vector2.h"
+#include <cmath>
 #include <iostream>
 #include <vector>
-#include <cmath>
 
 using namespace std;
 
@@ -162,84 +162,139 @@ void protein::append(vector<aminoacid> amino_sequence) {
       }
     }
   } else {
-    //REGULAR CASE (it's what the professor wants)
-    int r = floor(sqrt(length));
-    int count=0;
-    printf("root %d\n",r);
-    int dir = 1;
+    // REGULAR CASE (it's what the professor wants)
+
+    std::vector<int> pairs;
     
-    for (int i = 0; i < amino_sequence.size(); i++) {
-      if (matrix[position.y][position.x].compound == this->emptyChar) {
-        place(position, amino_sequence[i]);
-        count++;
-        position.y+=dir;
+    for(int i=1; i<=sqrt(length); i++){
+      if(length%i==0)
+      {
+        if(i == length/i){
+          pairs.push_back(i);
+        }else{
+          pairs.push_back(i);
+          pairs.push_back(length/i);
+        }
+        printf("n %d\n",pairs[i]);
       }
-      if (count == r) { //abs(position.y-_position.y) 
-        //position.y = _position.y;
-        position.x++;
-        dir *= -1;
-        count = 0;
+    }
+    
+    int ry = ceil(sqrt(length));
+    int rx = floor(sqrt(length));
+    if(ry != rx)
+    {
+      rx = pairs[pairs.size()-1];
+      ry = pairs[pairs.size()-2];
+    }
+    // if(rx*ry < length){
+    //   ry++;
+    // }
+    
+    printf("size is %d x %d\n",rx,ry);
+    int c = 1;
+    int flag = -1;
+
+    enum Stage { down = 0, left = 1, up = 2, right = 3 };
+
+    Stage stage = down;
+
+    //safe precausion to not use a while loop
+    //for(int n=0; n<amino_sequence.size(); n++)
+    int n = 0;
+    while(n<amino_sequence.size())  
+    {
+      if(stage == down && flag == -1)
+      {
+        for(int i=0; i<ry; i++)
+        {
+          position.y++;
+          place(position, amino_sequence[n]);
+          n++;
+        }
+        flag = 0;
+        stage = left;
       }
+
+      else if(stage == left)
+      {
+        for(int i=1; i<rx; i++)
+        {
+          position.x--;
+          place(position,amino_sequence[n]);
+          n++;
+        }
+        stage = up;
+
+        flag++;
+        if(flag == 2)
+        {
+          flag = 0;
+          ry--;
+          rx--;
+        }
+        
+      }
+
+      else if(stage == up)
+      {
+        for(int i=1; i<ry; i++)
+        {
+          position.y--;
+          place(position, amino_sequence[n]);
+          n++;
+        }
+        stage = right;
+
+        flag++;
+        if(flag == 2)
+        {
+          flag = 0;
+          ry--;
+          rx--;
+        }
+      }
+
+      else if(stage == right)
+      {
+        for(int i=1; i<rx; i++)
+        {
+          position.x++;
+          place(position, amino_sequence[n]);
+          n++;
+        }
+        stage = down;
+
+        flag++;
+        if(flag == 2)
+        {
+          flag = 0;
+          ry--;
+          rx--;
+        }
+      }
+
+      else if (stage == down)
+      {
+        for(int i=1; i<ry; i++)
+        {
+          position.y++;
+          place(position, amino_sequence[n]);
+          n++;
+        }
+        stage = left;
+
+        flag++;
+        if(flag == 2)
+        {
+          flag = 0;
+          ry--;
+          rx--;
+        }
+      }
+      
     }
   }
 }
-
-// OLD SCORE FUNCTION
-// int protein::score_function() {
-//   int score = 0;
-
-//   // THIS IS INSANELY INEFFICIENT! I'm just doing it as a temporary solution!
-//   // for (int i = 0; i < this->length; i++) {
-//   //   for (int j = 0; j < this->length; j++) {
-//   //     if (this->matrix[i][j].compound == 'H') {
-//   //       if (i - 1 >= 0)
-//   //         if (this->matrix[i - 1][j].compound == 'H')
-//   //           score++;
-
-//   //       if (i + 1 < this->length)
-//   //         if (this->matrix[i + 1][j].compound == 'H')
-//   //           score++;
-
-//   //       if (j - 1 >= 0)
-//   //         if (this->matrix[i][j - 1].compound == 'H')
-//   //           score++;
-
-//   //       if (j + 1 < this->length)
-//   //         if (this->matrix[i][j + 1].compound == 'H')
-//   //           score++;
-//   //     }
-//   //   }
-//   // }
-
-//   for (int n = 0; n < sequence.size(); n++) {
-
-//     if (sequence[n] != VECTOR2_INVALID) {
-//       int i, j;
-//       i = sequence[n].y;
-//       j = sequence[n].x;
-
-//       if (this->matrix[i][j].compound == 'H') {
-//         if (i - 1 >= 0)
-//           if (this->matrix[i - 1][j].compound == 'H')
-//             score++;
-
-//         if (i + 1 < this->length)
-//           if (this->matrix[i + 1][j].compound == 'H')
-//             score++;
-
-//         if (j - 1 >= 0)
-//           if (this->matrix[i][j - 1].compound == 'H')
-//             score++;
-
-//         if (j + 1 < this->length)
-//           if (this->matrix[i][j + 1].compound == 'H')
-//             score++;
-//       }
-//     }
-//   }
-
-//   return score;
-// }
 
 double protein::score_function() {
 

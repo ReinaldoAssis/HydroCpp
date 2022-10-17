@@ -20,9 +20,13 @@ void print_vector_array(std::vector<vector2> arr, int s, int e,
 
 std::vector<aminoacid> randomSequence(int length) {
   std::vector<aminoacid> sequence = std::vector<aminoacid>(length);
+  std::cout << "sequence forming ";
   for (int i = 0; i < length; i++) {
     sequence[i].compound = rand() % 2 == 0 ? 'P' : 'H';
+    std::cout << sequence[i].compound;
+    std::cout << " ";
   }
+  std::cout << std::endl;
   return sequence;
 }
 
@@ -54,7 +58,7 @@ void _display_random_proteins(int size, bool debug) {
     p.emptyChar = emptyChar;
     //p.initialize(size, false, true);
     p.initialize(size, false, false);
-    p.position = vector2(rand() % 5, rand() % 5);
+    p.position = vector2(size-2, 1);
     p._position = p.position;
 
     std::vector<aminoacid> sequence = randomSequence(size);
