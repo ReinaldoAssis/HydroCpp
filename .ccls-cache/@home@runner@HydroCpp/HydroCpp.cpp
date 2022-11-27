@@ -18,8 +18,8 @@ CONSTRUCT:
   protein p;
   p.emptyChar = emptyChar;
   p.initialize(sequence.size(), false, false);
-  //p.position = vector2(rand() % 5, rand() % 5);
-  p.position = vector2(sequence.size()/2+1,sequence.size()/2);
+  // p.position = vector2(rand() % 5, rand() % 5);
+  p.position = vector2(sequence.size() / 2 + 1, sequence.size() / 2);
   p._position = p.position;
 
   p.append(sequence);
@@ -28,6 +28,24 @@ CONSTRUCT:
     goto CONSTRUCT;
 
   return p;
+}
+
+// segundo projeto
+
+aminoacid popvector(std::vector<aminoacid> &v) {
+  aminoacid a = v.back();
+  v.pop_back();
+  return a;
+}
+
+void naraySolution(vector<aminoacid> sequencia) {
+  narayNode root; // arvore n-aria
+  std::vector<std::vector<aminoacid>> matrix;
+
+  for (int i = 0; i < sequencia.size(); i++)
+    printf("%c ", popvector(sequencia).compound);
+
+  printf("\n");
 }
 
 int main() {
@@ -43,7 +61,19 @@ int main() {
     std::cin >> nm;
 
     int _size = nm.length() > 0 ? std::stoi(nm) : 5;
-    _display_random_proteins(_size, false);
+    //_display_random_proteins(_size, false);
+
+    for (int c = 0; c < 100; c++) {
+      std::string line("");
+      if (c == 0)
+        std::getline(std::cin, line);
+
+      _display_random_proteins(_size, false);
+
+      std::getline(std::cin, line);
+      if (line.size() != 0)
+        break;
+    }
   }
 
   else if (choice == "ev")
@@ -51,6 +81,20 @@ int main() {
 
   else if (choice == "test")
     printf("\nTest result %s\n", run_all_tests() ? "[ALL PASSING]" : "[FAIL]");
+
+  else if (choice == "narya") {
+    std::cout << "Sequence: ";
+    std::string s("");
+    std::cin >> s;
+
+    std::vector<aminoacid> v;
+
+    for (int k = 0; k < s.size(); k++)
+      v.push_back(aminoacid(s[k], -1));
+
+    naraySolution(v);
+
+  }
 
   else {
     if (choice.find_first_not_of("PH") != std::string::npos) {
@@ -68,8 +112,11 @@ int main() {
           sequence.push_back(aminoacid(choice[i], i));
 
         protein p = _create_protein(sequence, '\0');
-        if (p.length <= 100)
+        if (p.length <= 100) {
           p.print();
+          // std::cout << '\n';
+          // p.print(protein::PRINT_MODE_INDEXED);
+        }
         std::cout << std::endl;
         printf("Score %.2f\n", p.score_function());
         // std::cout << p.sequence_string << std::endl;

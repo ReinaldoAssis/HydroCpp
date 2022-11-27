@@ -52,7 +52,7 @@ void _display_random_proteins(int size, bool debug) {
 
   printf("Protein size is %d\n", size);
 
-  for (int c = 0; c < 10; c++) {
+  for (int c = 0; c < 1; c++) {
 
   CONSTRUCT:
     protein p;
@@ -83,6 +83,9 @@ void _display_random_proteins(int size, bool debug) {
     // p.print(p.PRINT_MODE_INDEXED);
     p.print();
     std::cout << std::endl;
+    //p.print(protein::PRINT_MODE_INDEXED);
+    //std::cout << std::endl;
+    
     printf("Score %.2f\n", p.score_function());
     std::cout << "Initial position " + p._position.toStr() + "\n\n";
     std::cout << "Sequence " + p.sequence_string + "\n";

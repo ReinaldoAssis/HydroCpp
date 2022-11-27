@@ -23,4 +23,48 @@ struct aminoacid {
 
   bool operator!=(aminoacid b) { return !(*this == b); }
 };
+
+class narayNode {
+  aminoacid element;
+  narayNode *up;
+  narayNode *down;
+  narayNode *right;
+  narayNode *left;
+
+  enum POS { UP, DOWN, RIGHT, LEFT };
+
+public:
+  narayNode() {}
+
+  narayNode(aminoacid _element, narayNode *_up, narayNode *_down,
+            narayNode *_left, narayNode *_right) {
+    element = _element;
+    up = _up;
+    down = _down;
+    left = _left;
+    right = _right;
+  }
+
+  // adiciona vizinho
+  void neighbor(narayNode *_neighbor, POS placement) {
+    switch (placement) {
+    case UP:
+      up = _neighbor;
+      break;
+
+    case DOWN:
+      down = _neighbor;
+      break;
+
+    case LEFT:
+      left = _neighbor;
+      break;
+
+    case RIGHT:
+      right = _neighbor;
+      break;
+    }
+  }
+};
+
 #endif

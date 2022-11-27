@@ -18,6 +18,9 @@ struct protein {
 
   vector2 _position = vector2(0, 0);
 
+  // projeto 2
+  // void naraySolution(std::vector<aminoacid> sequencia);
+
   protein() {}
 
   protein(int _length, vector2 initialPosition = vector2(0, 0),
@@ -63,7 +66,7 @@ struct protein {
   double score_function();
 
   //@returns an array of elements displacements in relation to the initial
-  //element
+  // element
   std::vector<vector2> get_relative_coords();
 
   //@returns the amount of invalid vectors

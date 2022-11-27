@@ -6,6 +6,14 @@
 
 using namespace std;
 
+// implementação n-aria [segundo projeto]
+// nesse caso trata-se de uma árvore n-ária completa (possui sempre 4 filhos)
+// os filhos são cima, baixo, esquerda e direita representando as posições
+// possíveis filhos vazios indicam que o espaço é proibido
+
+
+//====================
+
 void protein::initialize(int _length, bool randomStart,
                          bool _randomizeSequences) {
   length = _length;
@@ -165,32 +173,30 @@ void protein::append(vector<aminoacid> amino_sequence) {
     // REGULAR CASE (it's what the professor wants)
 
     std::vector<int> pairs;
-    
-    for(int i=1; i<=sqrt(length); i++){
-      if(length%i==0)
-      {
-        if(i == length/i){
+
+    for (int i = 1; i <= sqrt(length); i++) {
+      if (length % i == 0) {
+        if (i == length / i) {
           pairs.push_back(i);
-        }else{
+        } else {
           pairs.push_back(i);
-          pairs.push_back(length/i);
+          pairs.push_back(length / i);
         }
-        printf("n %d\n",pairs[i]);
+        // printf("n %d\n",pairs[i]);
       }
     }
-    
+
     int ry = ceil(sqrt(length));
     int rx = floor(sqrt(length));
-    if(ry != rx)
-    {
-      rx = pairs[pairs.size()-1];
-      ry = pairs[pairs.size()-2];
+    if (ry != rx) {
+      rx = pairs[pairs.size() - 1];
+      ry = pairs[pairs.size() - 2];
     }
     // if(rx*ry < length){
     //   ry++;
     // }
-    
-    printf("size is %d x %d\n",rx,ry);
+
+    printf("size is %d x %d\n", rx, ry);
     int c = 1;
     int flag = -1;
 
@@ -198,15 +204,12 @@ void protein::append(vector<aminoacid> amino_sequence) {
 
     Stage stage = down;
 
-    //safe precausion to not use a while loop
-    //for(int n=0; n<amino_sequence.size(); n++)
+    // safe precausion to not use a while loop
+    // for(int n=0; n<amino_sequence.size(); n++)
     int n = 0;
-    while(n<amino_sequence.size())  
-    {
-      if(stage == down && flag == -1)
-      {
-        for(int i=0; i<ry; i++)
-        {
+    while (n < amino_sequence.size()) {
+      if (stage == down && flag == -1) {
+        for (int i = 0; i < ry; i++) {
           position.y++;
           place(position, amino_sequence[n]);
           n++;
@@ -215,30 +218,25 @@ void protein::append(vector<aminoacid> amino_sequence) {
         stage = left;
       }
 
-      else if(stage == left)
-      {
-        for(int i=1; i<rx; i++)
-        {
+      else if (stage == left) {
+        for (int i = 1; i < rx; i++) {
           position.x--;
-          place(position,amino_sequence[n]);
+          place(position, amino_sequence[n]);
           n++;
         }
         stage = up;
 
         flag++;
-        if(flag == 2)
-        {
+        if (flag == 2) {
           flag = 0;
           ry--;
           rx--;
         }
-        
+
       }
 
-      else if(stage == up)
-      {
-        for(int i=1; i<ry; i++)
-        {
+      else if (stage == up) {
+        for (int i = 1; i < ry; i++) {
           position.y--;
           place(position, amino_sequence[n]);
           n++;
@@ -246,18 +244,15 @@ void protein::append(vector<aminoacid> amino_sequence) {
         stage = right;
 
         flag++;
-        if(flag == 2)
-        {
+        if (flag == 2) {
           flag = 0;
           ry--;
           rx--;
         }
       }
 
-      else if(stage == right)
-      {
-        for(int i=1; i<rx; i++)
-        {
+      else if (stage == right) {
+        for (int i = 1; i < rx; i++) {
           position.x++;
           place(position, amino_sequence[n]);
           n++;
@@ -265,18 +260,15 @@ void protein::append(vector<aminoacid> amino_sequence) {
         stage = down;
 
         flag++;
-        if(flag == 2)
-        {
+        if (flag == 2) {
           flag = 0;
           ry--;
           rx--;
         }
       }
 
-      else if (stage == down)
-      {
-        for(int i=1; i<ry; i++)
-        {
+      else if (stage == down) {
+        for (int i = 1; i < ry; i++) {
           position.y++;
           place(position, amino_sequence[n]);
           n++;
@@ -284,14 +276,12 @@ void protein::append(vector<aminoacid> amino_sequence) {
         stage = left;
 
         flag++;
-        if(flag == 2)
-        {
+        if (flag == 2) {
           flag = 0;
           ry--;
           rx--;
         }
       }
-      
     }
   }
 }
@@ -340,9 +330,6 @@ double protein::score_function() {
       else if (hs[m].pos.y == _pos.y)
         dist = abs(hs[m].pos.x - _pos.x);
 
-      // printf("x %d - %d\n",hs[m].pos.x, _pos.x);
-      // printf("y %d - %d\n",hs[m].pos.y, _pos.y);
-      // printf("dist %d\n",dist);
       if (dist != 0)
         score += 1 / (double)dist;
     }
